@@ -22,11 +22,9 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfig {
 
     private final UserRepository userRepository;
-    private final JwtAuthFilter jwtAuthFilter;
 
-    public SecurityConfig(UserRepository userRepository, JwtAuthFilter jwtAuthFilter) {
+    public SecurityConfig(UserRepository userRepository) {
         this.userRepository = userRepository;
-        this.jwtAuthFilter = jwtAuthFilter;
     }
 
     @Bean
@@ -46,7 +44,8 @@ public class SecurityConfig {
     }
 
     @Bean
-    public AuthenticationManager authenticationManager(UserDetailsService userDetailsService, PasswordEncoder passwordEncoder) {
+    public AuthenticationManager authenticationManager(UserDetailsService userDetailsService,
+                                                       PasswordEncoder passwordEncoder) {
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
         authProvider.setUserDetailsService(userDetailsService);
         authProvider.setPasswordEncoder(passwordEncoder);
@@ -54,7 +53,13 @@ public class SecurityConfig {
     }
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    public JwtAuthFilter jwtAuthFilter() {
+        return new JwtAuthFilter();
+    }
+
+    @Bean
+    public SecurityFilterChain securityFilterChain(HttpSecurity http,
+                                                   JwtAuthFilter jwtAuthFilter) throws Exception {
         http
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/auth/**").permitAll()
@@ -69,3 +74,4 @@ public class SecurityConfig {
         return http.build();
     }
 }
+
