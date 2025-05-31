@@ -62,14 +62,13 @@ public class SecurityConfig {
                                                    JwtAuthFilter jwtAuthFilter) throws Exception {
         http
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/", "/auth/**", "/css/**", "/js/**", "/images/**", "/static/**").permitAll()
+                        .requestMatchers("/", "/index.html", "/auth/**", "/css/**", "/js/**", "/images/**", "/static/**").permitAll()
                         .anyRequest().authenticated()
                 )
-                .sessionManagement(session -> session
-                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                )
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .csrf(csrf -> csrf.disable())
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
+
 
         return http.build();
     }
