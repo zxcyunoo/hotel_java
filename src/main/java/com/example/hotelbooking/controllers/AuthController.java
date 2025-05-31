@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.*;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.example.hotelbooking.dto.AuthRequest;
+
 @RestController
 @RequestMapping("/auth")
 public class AuthController {
@@ -28,24 +30,18 @@ public class AuthController {
     private AuthenticationManager authenticationManager;
 
     @PostMapping("/register")
-    public User register(@RequestBody Map<String, String> body) {
-        String username = body.get("username");
-        String password = body.get("password");
-        return authService.register(username, password);
+    public User register(@RequestBody AuthRequest request) {
+        return authService.register(request.getUsername(), request.getPassword());
     }
 
-
     @PostMapping("/login")
-    public Map<String, Object> login(@RequestBody Map<String, String> body) {
+    public Map<String, Object> login(@RequestBody AuthRequest request) {
         try {
-            String username = body.get("username");
-            String password = body.get("password");
-
             Authentication auth = authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(username, password)
+                    new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword())
             );
 
-            String token = jwtUtil.generateToken(username);
+            String token = jwtUtil.generateToken(request.getUsername());
             Map<String, Object> response = new HashMap<>();
             response.put("token", token);
             response.put("message", "Login successful");
@@ -56,3 +52,4 @@ public class AuthController {
         }
     }
 }
+
